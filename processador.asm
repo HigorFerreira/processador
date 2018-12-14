@@ -56,8 +56,20 @@ Addx:  ; add 1 byte depois ...
 
 Exec_add_8:
       Mov rdx,Reg
-      Mov cl, byte [rdx+rax*4]
-      Mov ch, byte [rdx+bx*4]
+      ;x = rax*4 + rdx
+      push rax  ;Salvando o valor de rax que será modificado pela multiplicação
+      mov dl, 4 ;Colocando no dl o valor a ser multiplicado
+      mul dl    ;Comando de multiplicação rax*4
+                ;Neste ponto o rax é 4 vezes o valor original
+      add rdx, rax ;Somando o ponteiro
+      pop rax      ;Restaurando o valor de rax
+
+      Mov cl, byte [rdx]        ;Movendo o resultado do ponteiro
+      Mov ch, byte [rdx+bx*4]   ;
+
+      ;push rax
+
+
       Add cl,ch
       Mov byte [rdx+rax*4],cl
       call flags
@@ -241,3 +253,5 @@ inc_jc_ip:
       Jmp infinito
 
 ;.....	
+
+orx:

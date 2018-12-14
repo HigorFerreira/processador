@@ -3,7 +3,7 @@
 M: times 128000 db 0
 
 ; considerando em vetor 4 bytes onde  o reg eh o índice
-Reg: times 11 dd 0
+Reg: times 5 dq 0
 ZERO: db 0
 NEG: db 0
 CARRY: db 0

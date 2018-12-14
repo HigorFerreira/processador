@@ -43,7 +43,7 @@ Addx:  ; add 1 byte depois ...
 ; obtem registrores
 
       Xor rax,rax ; zera
-      Mov al, [RDI+RSI+1]
+      Mov al, byte [RDI+RSI+1]
       call decode_2r
       cmp rcx,1 
       je exec _add_8
@@ -68,15 +68,15 @@ Exec_add_16:
       Mov cx, word [rdx+rax*4]
       Mov bx, word  [rdx+rbx*4]
       Add cx,bx
-      Mov byte [rdx+rax*4],cx
+      Mov word [rdx+rax*4],cx
       call flags
       jmp inc_ip_add
 Exec_add_32:
       Mov rdx,Reg
-      Mov ecx, byte [rdx+rax*4]
-      Mov ebx, byte [rdx+bx*4]
+      Mov ecx, dword [rdx+rax*4]
+      Mov ebx, dword [rdx+bx*4]
       Add ecx,ebx
-      Mov byte [rdx+rax*4],ecx
+      Mov dword [rdx+rax*4],ecx
       call flags 
 inc_ip_add: 
       Add RSI,2
@@ -154,7 +154,7 @@ neg1:
       mov byte [neg],al
       ret 
 
-decode_2reg:
+decode_2r:
 ; IN AL  2 regs 
 ; OUT  R0 RAX 
 ;      R1 RBX 

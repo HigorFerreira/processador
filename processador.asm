@@ -61,10 +61,10 @@ Exec_add_8:
       mov dl, 4 ;Colocando no dl o valor a ser multiplicado
       mul dl    ;Comando de multiplicação rax*4
                 ;Neste ponto o rax é 4 vezes o valor original
-      add rdx, rax ;Somando o ponteiro
+      add r15, rax ;Somando o ponteiro
       pop rax      ;Restaurando o valor de rax
 
-      Mov cl, byte [rdx]        ;Movendo o resultado do ponteiro
+      Mov cl, byte [r15]        ;Movendo o resultado do ponteiro
       Mov ch, byte [rdx+bx*4]   ;
 
       ;push rax

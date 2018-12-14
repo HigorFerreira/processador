@@ -46,7 +46,7 @@ Addx:  ; add 1 byte depois ...
       Mov al, byte [RDI+RSI+1]
       call decode_2r
       cmp rcx,1 
-      je exec _add_8
+      je exec_add_8
       cmp rcx,2
       je  exec_add_16
       cmp rcx,3

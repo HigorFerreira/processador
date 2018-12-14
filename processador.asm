@@ -58,9 +58,11 @@ Exec_add_8:
       Mov rdx,Reg
       ;x = rax*4 + rdx
       push rax  ;Salvando o valor de rax que será modificado pela multiplicação
+      push rdx  ;Salvando o valor de rdx que será modificado pela multiplicação
       mov dl, 4 ;Colocando no dl o valor a ser multiplicado
       mul dl    ;Comando de multiplicação rax*4
                 ;Neste ponto o rax é 4 vezes o valor original
+      pop rdx      ;Restaurando o valor de rdx
       add rdx, rax ;Somando o ponteiro
       pop rax      ;Restaurando o valor de rax
                    ;rdx é o registrador certo pra somar pois ele percorrerá o vetor de registradores

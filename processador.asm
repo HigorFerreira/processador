@@ -63,7 +63,7 @@ Exec_add_8:
                 ;Neste ponto o rax é 4 vezes o valor original
       add rdx, rax ;Somando o ponteiro
       pop rax      ;Restaurando o valor de rax
-
+                   ;rdx é o registrador certo pra somar pois ele percorrerá o vetor de registradores
       Mov cl, byte [rdx]        ;Movendo o resultado do ponteiro
       Mov ch, byte [rdx+bx*4]   ;
 

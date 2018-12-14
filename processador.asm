@@ -61,10 +61,10 @@ Exec_add_8:
       mov dl, 4 ;Colocando no dl o valor a ser multiplicado
       mul dl    ;Comando de multiplicação rax*4
                 ;Neste ponto o rax é 4 vezes o valor original
-      add r15, rax ;Somando o ponteiro
+      add rdx, rax ;Somando o ponteiro
       pop rax      ;Restaurando o valor de rax
-
-      Mov cl, byte [r15]        ;Movendo o resultado do ponteiro
+                   ;rdx é o registrador certo pra somar pois ele percorrerá o vetor de registradores
+      Mov cl, byte [rdx]        ;Movendo o resultado do ponteiro
       Mov ch, byte [rdx+bx*4]   ;
 
       ;push rax

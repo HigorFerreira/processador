@@ -22,7 +22,10 @@ Infinito:
      JE  subx
      Cmp AL, 2
      Je andx 
-     .....
+     ;.....
+     cmp al, 3
+     je orx
+     ;.....
      Cmp AL,18 
      JE haltx 
       ; --- se não esta entre 00 e 18 invalida 

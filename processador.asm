@@ -17,7 +17,7 @@ start:
 
 ; RSI atuará como IP  RDI Memoria
       Mov  RDi, M
-Infinito:
+infinito:
      Mov RSI,[IP]
      ; obtem instrução 
      Mov AL, Byte [RDI+RSI]
@@ -59,7 +59,7 @@ pointer_calc:
 
 ;===========instruções
 
-Addx:  ; add 1 byte depois ...
+addx:  ; add 1 byte depois ...
 ; instrução add soma dois registradores mesmo tamanho 
 ; obtem registrores
 
@@ -75,7 +75,7 @@ Addx:  ; add 1 byte depois ...
       ; ERRO INVL REG 
       jmp trata_reg_invalido
 
-Exec_add_8:
+exec_add_8:
       Mov rdx,Reg
       
       ;Implementing ------------> Mov cl, byte [rdx+rax*4]
@@ -100,10 +100,10 @@ Exec_add_8:
       call pointer_calc
       Mov byte [r8],cl
 
-      call flags
+      call FLAGS
       jmp inc_ip_add
 ;-----
-Exec_add_16:
+exec_add_16:
       Mov rdx,Reg
       ;pointer_calc
             mov r8, rdx
@@ -121,9 +121,9 @@ Exec_add_16:
             mov r9, rax
             call pointer_calc
       Mov word [r8],cx
-      call flags
+      call FLAGS
       jmp inc_ip_add
-Exec_add_32:
+exec_add_32:
       Mov rdx,Reg
       ;pointer_calc
             mov r8, rdx
@@ -142,13 +142,13 @@ Exec_add_32:
             mov r9, rax
             call pointer_calc
       Mov [r8],ecx
-      call flags 
+      call FLAGS 
 inc_ip_add: 
       Add RSI,2
       Mov [IP], DWORD RSI
       Jmp infinito	
 ;------------------------------------------------------------
-Subx: 
+subx: 
 ; sub 1 byte depois ...
 ; instrução sub subtrai  dois registradores mesmo tamanho 
 ; obtem registrores
@@ -164,7 +164,7 @@ Subx:
       ; ERRO INVL REG 
       jmp trata_reg_invalido
 
-Exec_sub_8:
+exec_sub_8:
       Mov rdx,Reg
       ;pointer_calc
             mov r8, rdx
@@ -182,10 +182,10 @@ Exec_sub_8:
             mov r9, rax
             call pointer_calc
       Mov byte [r8],cl
-      call flags
+      call FLAGS
       jmp inc_ip_sub
 ;-----
-Exec_sub_16:
+exec_sub_16:
       Mov rdx,Reg
       ;pointer_calc
             mov r8, rdx
@@ -203,9 +203,9 @@ Exec_sub_16:
             mov r9, rax
             call pointer_calc
       ;Mov [r8b], cx   ================= procurar saber o que significa
-      call flags
+      call FLAGS
       jmp inc_ip_sub
-Exec_sub_32:
+exec_sub_32:
       Mov rdx,Reg
       ;pointer_calc
             mov r8, rdx
@@ -224,7 +224,7 @@ Exec_sub_32:
             mov r9, rax
             call pointer_calc
       Mov [r8d],ecx
-      call flags 
+      call FLAGS 
 inc_ip_sub: 
       Add RSI,2
       Mov [IP],RSI
@@ -232,28 +232,28 @@ inc_ip_sub:
 
 ;< todas as outras>	
 ; --- flags
-Flags:
+FLAGS:
       Jz zero1
       Mov al,0
       Jmp carry
-Zero1:
+zero1:
       Mov al,1
-Carry:
+carry:
       Mov [zero],al
       Jc  carry1
       Mov al,0 
-      Jmp neg
-Carry1:
+      Jmp negx
+carry1:
       Mov al,1
-Neg:
+negx:
       Mov [carry],al
       jl neg1
       mov al, 0
-      mov  [neg],al
+      mov  [NEG],al
       ret
 neg1:
       mov al,1
-      mov byte [neg],al
+      mov byte [NEG],al
       ret 
 
 decode_2r:
@@ -267,7 +267,7 @@ decode_2r:
 ; na parte alta de ah esta o reg destino e na parte baixa o origem separa.
 ; descobre se é 8,16 ou 32 bits
 ; separa 
-      Mov rbx, fh  ; mascara 1111 binaria 
+      Mov rbx, 0xf  ; mascara 1111 binaria 
       And rbx, rax  ; separou destino
 ; shift dir 4 em rax separa origem 
       Shr rax,4  
@@ -299,7 +299,7 @@ testa16:
       mov rcx, 2
       ret 
 ;==== 32 
-Testa32: ; 0,1, a  e B
+testa32: ; 0,1, a  e B
      Cmp rax,0
      Je tesx2
      Cmp rax,1
@@ -311,7 +311,7 @@ Testa32: ; 0,1, a  e B
 ;--- invalid
      Jmp erro_reg_sai
 ; primeiro eh 32
-Tesx2:
+tesx2:
      Cmp rbx,0
      Je add_32
      Cmp rbx,1
@@ -344,4 +344,18 @@ inc_jc_ip:
 
 ;.....	
 
+andx:
+
 orx:
+
+
+
+
+
+
+
+haltx:
+
+trata_inst_invalida_sai:
+trata_reg_invalido:
+zero:

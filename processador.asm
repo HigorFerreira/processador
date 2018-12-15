@@ -1,7 +1,5 @@
-global start
-
 ; HW 32 bits , 128 kbytes de memoria 
-section .data 
+SECTION .data 
 M: times 128000 db 0
 
 ; considerando em vetor 4 bytes onde  o reg eh o índice
@@ -11,9 +9,13 @@ NEG: db 0
 CARRY: db 0
 IP:  dd 0  ; indicara a próxima instrução a buscar
   
-section .text
+SECTION .text
+
+global start
+
 start:
-; RSI atuara como IP  RDI Memoria
+
+; RSI atuará como IP  RDI Memoria
       Mov  RDi, M
 Infinito:
      Mov RSI,[IP]
@@ -89,7 +91,7 @@ Exec_add_8:
       mov r9w, bx
       ;r8 <- (r8 + r9*4) !alter r15, r8
       call pointer_calc
-      mov ch, byte[r8]
+      ;mov ch, byte[r8]   ================ ERRO
 
       Add cl,ch
       ;Implementing ------------> Mov byte [rdx+rax*4],cl
@@ -139,11 +141,11 @@ Exec_add_32:
             mov r8, rdx
             mov r9, rax
             call pointer_calc
-      Mov dword [r8],ecx
+      Mov [r8],ecx
       call flags 
 inc_ip_add: 
       Add RSI,2
-      Mov dword  [IP],RSI
+      Mov [IP], DWORD RSI
       Jmp infinito	
 ;------------------------------------------------------------
 Subx: 
@@ -173,7 +175,7 @@ Exec_sub_8:
             mov r8, rdx
             mov r9, rbx
             call pointer_calc
-      Mov ch, byte [r8]
+      ;Mov ch, byte [r8]   ================ ERRO
       sub cl,ch
       ;pointer_calc
             mov r8, rdx
@@ -200,7 +202,7 @@ Exec_sub_16:
             mov r8, rdx
             mov r9, rax
             call pointer_calc
-      Mov byte [r8],cx
+      ;Mov [r8b], cx   ================= procurar saber o que significa
       call flags
       jmp inc_ip_sub
 Exec_sub_32:
@@ -209,23 +211,23 @@ Exec_sub_32:
             mov r8, rdx
             mov r9, rax
             call pointer_calc
-      Mov ecx, byte [r8]
+      Mov ecx, dword [r8]
       ;pointer_calc
             mov r8, rdx
             xor r9, r9
             mov r9w, bx
             call pointer_calc
-      Mov ebx, byte [r8]
+      Mov ebx, dword [r8]
       sub ecx,ebx
       ;pointer_calc
             mov r8, rdx
             mov r9, rax
             call pointer_calc
-      Mov byte [r8],ecx
+      Mov [r8d],ecx
       call flags 
 inc_ip_sub: 
       Add RSI,2
-      Mov dword  [IP],RSI
+      Mov [IP],RSI
       Jmp infinito	
 
 ;< todas as outras>	
@@ -237,17 +239,17 @@ Flags:
 Zero1:
       Mov al,1
 Carry:
-      Mov byte [zero],al
+      Mov [zero],al
       Jc  carry1
       Mov al,0 
       Jmp neg
 Carry1:
       Mov al,1
 Neg:
-      Mov byte [carry],al
+      Mov [carry],al
       jl neg1
       mov al, 0
-      mov  byte [neg],al
+      mov  [neg],al
       ret
 neg1:
       mov al,1
@@ -302,9 +304,9 @@ Testa32: ; 0,1, a  e B
      Je tesx2
      Cmp rax,1
      Je tesx2
-     Cmp rax,ah
+     Cmp rax, 0xa     ;ah número? ou registrador?
      Je tesx2
-     Cmp rax, bh
+     Cmp rax, 0xb     ;bh número? ou registrador?
      Je tesx2
 ;--- invalid
      Jmp erro_reg_sai
@@ -314,9 +316,9 @@ Tesx2:
      Je add_32
      Cmp rbx,1
      Je add_32
-     Cmp rbx, ah
+     Cmp rbx, 0ah       ;ah número? ou registrador?
      Je add_32
-     Cmp rbx, bh
+     Cmp rbx, 0bh       ;bh número? ou registrador?
      JNE erro_reg_sai 
  add_32:
       mov rcx, 31 ;Não tenho certeza se era isso que o professor queria escrever
@@ -332,12 +334,12 @@ jcarryx:
 ; RSI=IP RDI=M 
 JNC inc_jc_ip
 ; desvia
-   mov RSI, dword[RDI+RSI+1]
-   Mov dword  [IP],RSI
+   mov esi, dword[RDI+RSI+1]
+   Mov [IP], esi
    Jmp infinito	
 inc_jc_ip:
       Add RSI,5
-      Mov dword  [IP],RSI
+      Mov [IP], dword RSI
       Jmp infinito
 
 ;.....	

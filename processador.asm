@@ -1,5 +1,7 @@
+global start
+
 ; HW 32 bits , 128 kbytes de memoria 
-.data 
+section .data 
 M: times 128000 db 0
 
 ; considerando em vetor 4 bytes onde  o reg eh o índice
@@ -9,7 +11,8 @@ NEG: db 0
 CARRY: db 0
 IP:  dd 0  ; indicara a próxima instrução a buscar
   
-
+section .text
+start:
 ; RSI atuara como IP  RDI Memoria
       Mov  RDi, M
 Infinito:
@@ -151,7 +154,7 @@ Subx:
       Mov al, [RDI+RSI+1]
       call decode_2r
       cmp rcx,1 
-      je exec _sub_8
+      je exec_sub_8
       cmp rcx,2
       je  exec_sub_16
       cmp rcx,3
@@ -225,7 +228,7 @@ inc_ip_sub:
       Mov dword  [IP],RSI
       Jmp infinito	
 
-< todas as outras>	
+;< todas as outras>	
 ; --- flags
 Flags:
       Jz zero1
@@ -279,7 +282,7 @@ decode_2r:
 ; --- os dois são 8 bits e códigos estão em RAX e RBX
       mov rcx, 	1 
       ret 
-testa 16:
+testa16:
  ; 16 bits no intervalo 02 a 05
      Cmp rax,2
      Jl testa32
@@ -316,7 +319,7 @@ Tesx2:
      Cmp rbx, bh
      JNE erro_reg_sai 
  add_32:
-       mov rcx,3 	1 
+      mov rcx, 31 ;Não tenho certeza se era isso que o professor queria escrever
       ret 
 ;-erro 
 erro_reg_sai:

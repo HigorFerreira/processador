@@ -37,11 +37,11 @@ Infinito:
 ;-------------------------------------- seta flag
 
 ;Helpers
-      ;Este helper faz uma operação do tipo X+Y*4 
-      ;X deve ser setado no r8
-      ;Y deve ser setado no r9
-      ;O resultado é retornado no r8
-      ;Prototype: r8 pointer_calc(r8, r9) !alter r15
+      ;This helper makes an operation of the type X+Y*4 
+      ;X has to be seted in r8
+      ;Y has to be seted in r9
+      ;The result is returned in r8
+      ;Prototype: r8 <- (r8 + r9*4) !alter r15, r8
 pointer_calc:
       push rax  ;Salvando o valor de rax que será modificado pela multiplicação
       mov rax, r9
@@ -72,45 +72,71 @@ Addx:  ; add 1 byte depois ...
 
 Exec_add_8:
       Mov rdx,Reg
-                ;x = rax*4 + rdx
       
-
-      Mov cl, byte [rdx]        ;Movendo o resultado do ponteiro
-      pop rdx
-      pop rax
+      ;Implementing ------------> Mov cl, byte [rdx+rax*4]
+      mov r8, rdx
+      mov r9, rax
+      ;r8 <- (r8 + r9*4) !alter r15, r8
+      call pointer_calc
+      Mov cl, byte [r8]        ;Movendo o resultado do ponteiro
       
-      ;Implementando ------------> Mov ch, byte [rdx+bx*4]
-      push rax
-      mov rax, rbx
-      mov r15b, 4
-      mul r15b
-
-      push rdx
-      add rdx, rax
-
-      mov ch, byte[rdx]
-      pop rdx
-      pop rax
+      ;Implementing ------------> Mov ch, byte [rdx+bx*4]
+      mov r8, rdx
+      xor r9, r9
+      mov r9w, bx
+      ;r8 <- (r8 + r9*4) !alter r15, r8
+      call pointer_calc
+      mov ch, byte[r8]
 
       Add cl,ch
-      Mov byte [rdx+rax*4],cl
+      ;Implementing ------------> Mov byte [rdx+rax*4],cl
+      mov r8, rdx
+      mov r9, rax
+      call pointer_calc
+      Mov byte [r8],cl
+
       call flags
       jmp inc_ip_add
 ;-----
 Exec_add_16:
       Mov rdx,Reg
-      Mov cx, word [rdx+rax*4]
-      Mov bx, word  [rdx+rbx*4]
+      ;pointer_calc
+            mov r8, rdx
+            mov r9, rax
+            call pointer_calc
+      Mov cx, word [r8]
+      ;pointer_calc
+            mov r8, rdx
+            mov r9, rbx
+            call pointer_calc
+      Mov bx, word  [r8]
       Add cx,bx
-      Mov word [rdx+rax*4],cx
+      ;pointer_calc
+            mov r8, rdx
+            mov r9, rax
+            call pointer_calc
+      Mov word [r8],cx
       call flags
       jmp inc_ip_add
 Exec_add_32:
       Mov rdx,Reg
-      Mov ecx, dword [rdx+rax*4]
-      Mov ebx, dword [rdx+bx*4]
+      ;pointer_calc
+            mov r8, rdx
+            mov r9, rax
+            call pointer_calc
+      Mov ecx, dword [r8]
+      ;pointer_calc
+            mov r8, rdx
+            xor r9, r9
+            mov r9w, bx
+            call pointer_calc
+      Mov ebx, dword [r8]
       Add ecx,ebx
-      Mov dword [rdx+rax*4],ecx
+      ;pointer_calc
+            mov r8, rdx
+            mov r9, rax
+            call pointer_calc
+      Mov dword [r8],ecx
       call flags 
 inc_ip_add: 
       Add RSI,2
@@ -135,27 +161,64 @@ Subx:
 
 Exec_sub_8:
       Mov rdx,Reg
-      Mov cl, byte [rdx+rax*4]
-      Mov ch, byte [rdx+rbx*4]
+      ;pointer_calc
+            mov r8, rdx
+            mov r9, rax
+            call pointer_calc
+      Mov cl, byte [r8]
+      ;pointer_calc
+            mov r8, rdx
+            mov r9, rbx
+            call pointer_calc
+      Mov ch, byte [r8]
       sub cl,ch
-      Mov byte [rdx+rax*4],cl
+      ;pointer_calc
+            mov r8, rdx
+            mov r9, rax
+            call pointer_calc
+      Mov byte [r8],cl
       call flags
       jmp inc_ip_sub
 ;-----
 Exec_sub_16:
       Mov rdx,Reg
-      Mov cx, word [rdx+rax*4]
-      Mov bx, word  [rdx+rbx*4]
+      ;pointer_calc
+            mov r8, rdx
+            mov r9, rax
+            call pointer_calc
+      Mov cx, word [r8]
+      ;pointer_calc
+            mov r8, rdx
+            mov r9, rbx
+            call pointer_calc
+      Mov bx, word  [r8]
       sub cx,bx
-      Mov byte [rdx+rax*4],cx
+      ;pointer_calc
+            mov r8, rdx
+            mov r9, rax
+            call pointer_calc
+      Mov byte [r8],cx
       call flags
       jmp inc_ip_sub
 Exec_sub_32:
       Mov rdx,Reg
-      Mov ecx, byte [rdx+rax*4]
-      Mov ebx, byte [rdx+bx*4]
+      ;pointer_calc
+            mov r8, rdx
+            mov r9, rax
+            call pointer_calc
+      Mov ecx, byte [r8]
+      ;pointer_calc
+            mov r8, rdx
+            xor r9, r9
+            mov r9w, bx
+            call pointer_calc
+      Mov ebx, byte [r8]
       sub ecx,ebx
-      Mov byte [rdx+rax*4],ecx
+      ;pointer_calc
+            mov r8, rdx
+            mov r9, rax
+            call pointer_calc
+      Mov byte [r8],ecx
       call flags 
 inc_ip_sub: 
       Add RSI,2

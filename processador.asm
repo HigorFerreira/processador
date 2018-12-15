@@ -34,7 +34,23 @@ Infinito:
 ;-------------------------------------decodifica 2 reg
 
 
-;-------------------------------------- seta flag 
+;-------------------------------------- seta flag
+
+;Helpers
+      ;Este helper faz uma operação do tipo X+Y*4 
+      ;X deve ser setado no r8
+      ;Y deve ser setado no r9
+      ;O resultado é retornado no r8
+      ;Prototype: r8 pointer_calc(r8, r9) !alter r15
+pointer_calc:
+      push rax  ;Salvando o valor de rax que será modificado pela multiplicação
+      mov rax, r9
+      mov r15b, 4 ;Colocando no r15b o valor a ser multiplicado
+      mul r15b    ;Comando de multiplicação rax*4 = Y*4
+                  ;Neste ponto o rax é 4 vezes o valor original
+      add r8, rax ;Somando o ponteiro, r8 = X+Y*4
+      pop rax     ;Recuperando o valor original de rax
+      ret
 
 ;===========instruções
 
@@ -56,21 +72,25 @@ Addx:  ; add 1 byte depois ...
 
 Exec_add_8:
       Mov rdx,Reg
-      ;x = rax*4 + rdx
-      push rax  ;Salvando o valor de rax que será modificado pela multiplicação
-      push rdx  ;Salvando o valor de rdx que será modificado pela multiplicação
-      mov dl, 4 ;Colocando no dl o valor a ser multiplicado
-      mul dl    ;Comando de multiplicação rax*4
-                ;Neste ponto o rax é 4 vezes o valor original
-      pop rdx      ;Restaurando o valor de rdx
-      add rdx, rax ;Somando o ponteiro
-      pop rax      ;Restaurando o valor de rax
-                   ;rdx é o registrador certo pra somar pois ele percorrerá o vetor de registradores
+                ;x = rax*4 + rdx
+      
+
       Mov cl, byte [rdx]        ;Movendo o resultado do ponteiro
-      Mov ch, byte [rdx+bx*4]
+      pop rdx
+      pop rax
+      
+      ;Implementando ------------> Mov ch, byte [rdx+bx*4]
+      push rax
+      mov rax, rbx
+      mov r15b, 4
+      mul r15b
 
-      ;push rax
+      push rdx
+      add rdx, rax
 
+      mov ch, byte[rdx]
+      pop rdx
+      pop rax
 
       Add cl,ch
       Mov byte [rdx+rax*4],cl

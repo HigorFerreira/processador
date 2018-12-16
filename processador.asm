@@ -368,7 +368,7 @@ andx:
             mov r8, rcx
             mov r9, rax
             call pointer_calc
-            mov cl, byte [r8l] ;Error, 
+            mov cl, byte [r8] ;Error, betwen registers?
             ;OR OPERATION
             or cl, ch
             ;MOVING OPERATION RESULT FOR THE FIRST REGISTER

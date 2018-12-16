@@ -46,7 +46,7 @@ infinito:
       ;X has to be seted in rax
       ;Y has to be seted in rbx
       ;The result is returned in rcx
-      ;Prototype: rcx <- (rax + rbx*4) !alter rcx
+      ;Prototype: rcx <- (rax*4 + rbx) !alter rcx
 pointer_calc:
       push rax  ;Salvando o valor de rax que será modificado pela multiplicação
       push rbx  ;Salvando o valor de rbx que será modificado pela multiplicação

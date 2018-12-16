@@ -43,17 +43,21 @@ infinito:
 
 ;Helpers
       ;This helper makes an operation of the type X+Y*4 
-      ;X has to be seted in r8
-      ;Y has to be seted in r9
-      ;The result is returned in r8
-      ;Prototype: r8 <- (r8 + r9*4) !alter r15, r8
+      ;X has to be seted in rax
+      ;Y has to be seted in rbx
+      ;The result is returned in rcx
+      ;Prototype: rcx <- (rax + rbx*4) !alter rcx
 pointer_calc:
       push rax  ;Salvando o valor de rax que será modificado pela multiplicação
-      mov rax, r9
-      mov r15b, 4 ;Colocando no r15b o valor a ser multiplicado
-      mul r15b    ;Comando de multiplicação rax*4 = Y*4
-                  ;Neste ponto o rax é 4 vezes o valor original
-      add r8, rax ;Somando o ponteiro, r8 = X+Y*4
+      push rbx  ;Salvando o valor de rbx que será modificado pela multiplicação
+
+      mov rcx, 4   ;Colocando no rcx o valor a ser multiplicado
+      mul cl       ;Comando de multiplicação rax*4 = Y*4
+                   ;Neste ponto o rax é 4 vezes o valor original
+      add rbx, rax ;Somando o ponteiro, rbx = rax*4  + rbx
+      mov rcx, rbx ;Salvando o resultado que deverá ser retornado em rcx
+      
+      pop rbx     ;Recuperando o valor original de rbx
       pop rax     ;Recuperando o valor original de rax
       ret
 

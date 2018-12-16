@@ -321,7 +321,7 @@ tesx2:
      Cmp rbx, 0bh       ;bh número? ou registrador?
      JNE erro_reg_sai 
  add_32:
-      mov rcx, 31 ;Não tenho certeza se era isso que o professor queria escrever
+      mov rcx, 3
       ret 
 ;-erro 
 erro_reg_sai:
@@ -345,14 +345,41 @@ inc_jc_ip:
 ;.....	
 
 andx:
+      xor rax, rax
+      mov al, byte[rsi + rdi + 1]
+      call decode_2r
+      cmp cl, 1b
+      je andx8
+      cmp cl, 10b
+      je andx16
+      cmp cl, 11b
+      je andx32
+      ;Erro de registrador inválido
+      jmp trata_reg_invalido
+      andx8:
+            mov rcx, Reg
+           
+            ;r8 <- (r8 + r9*4) !alter r15, r8
+            mov r8, rcx
+            mov r9, rbx
+            call pointer_calc
+            mov ch, byte [r8]
+             ;r8 <- (r8 + r9*4) !alter r15, r8
+            mov r8, rcx
+            mov r9, rax
+            call pointer_calc
+            mov cl, byte [r8]
+            ;OR OPERATION
+            or cl, ch
+            ;MOVING OPERATION RESULT FOR THE FIRST REGISTER
+            mov [r8], cl
+            ;THIS OPERATION DOES NOT SET FLAGS
+            jmp inc_ip_add
+            
+      andx16:
+      andx32:
 
 orx:
-
-
-
-
-
-
 
 haltx:
 

@@ -111,15 +111,16 @@ exec_add_8:
 exec_add_16:
       Mov rdx,Reg
       ;pointer_calc
-            mov r8, rdx
-            mov r9, rax
+            ;Prototype: rcx <- (rax*4 + rdx) !alter rcx
             call pointer_calc
-      Mov cx, word [r8]
+      Mov cx, word [rcx]
       ;pointer_calc
-            mov r8, rdx
-            mov r9, rbx
+            push rax
+            mov rax, rbx
+            ;Prototype: rcx <- (rax*4 + rdx) !alter rcx
             call pointer_calc
-      Mov bx, word  [r8]
+            pop rax
+      Mov bx, word  [rcx]
       Add cx,bx
       ;pointer_calc
             mov r8, rdx

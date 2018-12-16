@@ -85,26 +85,25 @@ exec_add_8:
       Mov rdx,Reg
       
       ;Implementing ------------> Mov cl, byte [rdx+rax*4]
-      mov r8, rdx
-      mov r9, rax
-      ;r8 <- (r8 + r9*4) !alter r15, r8
+      
+      ;Prototype: rcx <- (rax*4 + rdx) !alter rcx
       call pointer_calc
-      Mov cl, byte [r8]        ;Movendo o resultado do ponteiro
+      Mov cl, byte [rcx]        ;Movendo o resultado do ponteiro
       
       ;Implementing ------------> Mov ch, byte [rdx+bx*4]
-      mov r8, rdx
-      xor r9, r9
-      mov r9w, bx
-      ;r8 <- (r8 + r9*4) !alter r15, r8
+      push rax
+      xor rax, rax
+      mov ax, bx
+      ;Prototype: rcx <- (rax*4 + rdx) !alter rcx
       call pointer_calc
-      ;mov ch, byte[r8]   ================ ERRO
+      ;mov ch, byte[rcx]   ================ ERRO
+      pop rax
 
-      Add cl,ch
+      Add cl, ch
       ;Implementing ------------> Mov byte [rdx+rax*4],cl
-      mov r8, rdx
-      mov r9, rax
+      ;Prototype: rcx <- (rax*4 + rdx) !alter rcx
       call pointer_calc
-      Mov byte [r8],cl
+      Mov byte [rcx],cl
 
       call FLAGS
       jmp inc_ip_add

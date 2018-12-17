@@ -402,16 +402,16 @@ andx:
             mov rax, rbx
             ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc
-            mov ch, byte [rbp]
+            mov ecx, byte [rbp]
             pop rax
 
             ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc
-            mov cl, byte [rbp]
+            mov ebx, byte [rbp]
             ;OR OPERATION
-            or cl, ch
+            or ebx, ecx
             ;MOVING OPERATION RESULT FOR THE FIRST REGISTER
-            mov [rbp], cl
+            mov [rbp], ebx
             ;THIS OPERATION DOES NOT SET FLAGS
             jmp inc_ip_add
 

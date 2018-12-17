@@ -29,6 +29,8 @@ infinito:
      Je andx 
      ;.....
      cmp al, 3
+     je andx
+     cmp al, 4
      je orx
      ;.....
      Cmp AL,18 

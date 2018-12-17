@@ -390,12 +390,12 @@ andx:
             mov rax, rbx
             ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc
-            mov cx, byte [rbp]
+            mov cx, word [rbp]
             pop rax
 
             ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc
-            mov bx, byte [rbp]
+            mov bx, word [rbp]
             ;AND OPERATION
             and bx, cx
             ;MOVING OPERATION RESULT FOR THE FIRST REGISTER
@@ -409,12 +409,12 @@ andx:
             mov rax, rbx
             ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc
-            mov ecx, byte [rbp]
+            mov ecx, dword [rbp]
             pop rax
 
             ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc
-            mov ebx, byte [rbp]
+            mov ebx, dword [rbp]
             ;AND OPERATION
             and ebx, ecx
             ;MOVING OPERATION RESULT FOR THE FIRST REGISTER
@@ -461,12 +461,12 @@ orx:
             mov rax, rbx
             ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc
-            mov cx, byte [rbp]
+            mov cx, word [rbp]
             pop rax
 
             ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc
-            mov bx, byte [rbp]
+            mov bx, word [rbp]
             ;OR OPERATION
             or bx, cx
             ;MOVING OPERATION RESULT FOR THE FIRST REGISTER
@@ -480,12 +480,12 @@ orx:
             mov rax, rbx
             ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc
-            mov ecx, byte [rbp]
+            mov ecx, dword [rbp]
             pop rax
 
             ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc
-            mov ebx, byte [rbp]
+            mov ebx, dword [rbp]
             ;OR OPERATION
             or ebx, ecx
             ;MOVING OPERATION RESULT FOR THE FIRST REGISTER

@@ -43,17 +43,23 @@ infinito:
 
 ;Helpers
       ;This helper makes an operation of the type X+Y*4 
-      ;X has to be seted in r8
-      ;Y has to be seted in r9
-      ;The result is returned in r8
-      ;Prototype: r8 <- (r8 + r9*4) !alter r15, r8
+      ;X has to be seted in rax
+      ;Y has to be seted in rdx
+      ;The result is returned in rbp
+      ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
 pointer_calc:
       push rax  ;Salvando o valor de rax que será modificado pela multiplicação
-      mov rax, r9
-      mov r15b, 4 ;Colocando no r15b o valor a ser multiplicado
-      mul r15b    ;Comando de multiplicação rax*4 = Y*4
-                  ;Neste ponto o rax é 4 vezes o valor original
-      add r8, rax ;Somando o ponteiro, r8 = X+Y*4
+
+      mov rbp, 4   ;Colocando no rbp o valor a ser multiplicado
+      mul bpl      ;Comando de multiplicação rax*4 = Y*4
+                   ;Neste ponto o rax é 4 vezes o valor original
+      
+      push rdx     ;Salvando o valor de rdx que será modificado pela adição
+
+      add rdx, rax ;Somando o ponteiro, rdx = rax*4  + rdx
+      mov rbp, rdx ;Salvando o resultado que deverá ser retornado em rbp
+      
+      pop rdx     ;Recuperando o valor original de rdx
       pop rax     ;Recuperando o valor original de rax
       ret
 
@@ -79,26 +85,25 @@ exec_add_8:
       Mov rdx,Reg
       
       ;Implementing ------------> Mov cl, byte [rdx+rax*4]
-      mov r8, rdx
-      mov r9, rax
-      ;r8 <- (r8 + r9*4) !alter r15, r8
+      
+      ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
       call pointer_calc
-      Mov cl, byte [r8]        ;Movendo o resultado do ponteiro
+      Mov cl, byte [rbp]        ;Movendo o resultado do ponteiro
       
       ;Implementing ------------> Mov ch, byte [rdx+bx*4]
-      mov r8, rdx
-      xor r9, r9
-      mov r9w, bx
-      ;r8 <- (r8 + r9*4) !alter r15, r8
+      push rax
+      xor rax, rax
+      mov ax, bx
+      ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
       call pointer_calc
-      ;mov ch, byte[r8]   ================ ERRO
+      ;mov ch, byte[rbp]   ================ ERRO
+      pop rax
 
-      Add cl,ch
+      Add cl, ch
       ;Implementing ------------> Mov byte [rdx+rax*4],cl
-      mov r8, rdx
-      mov r9, rax
+      ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
       call pointer_calc
-      Mov byte [r8],cl
+      Mov byte [rbp],cl
 
       call FLAGS
       jmp inc_ip_add
@@ -106,42 +111,42 @@ exec_add_8:
 exec_add_16:
       Mov rdx,Reg
       ;pointer_calc
-            mov r8, rdx
-            mov r9, rax
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc
-      Mov cx, word [r8]
+      Mov cx, word [rbp]
       ;pointer_calc
-            mov r8, rdx
-            mov r9, rbx
+            push rax
+            mov rax, rbx
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc
-      Mov bx, word  [r8]
+            pop rax
+      Mov bx, word  [rbp]
       Add cx,bx
       ;pointer_calc
-            mov r8, rdx
-            mov r9, rax
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc
-      Mov word [r8],cx
+      Mov word [rbp],cx
       call FLAGS
       jmp inc_ip_add
 exec_add_32:
       Mov rdx,Reg
       ;pointer_calc
-            mov r8, rdx
-            mov r9, rax
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc
-      Mov ecx, dword [r8]
+      Mov ecx, dword [rbp]
       ;pointer_calc
-            mov r8, rdx
-            xor r9, r9
-            mov r9w, bx
+            push rax
+            xor rax, rax
+            mov ax, bx
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc
-      Mov ebx, dword [r8]
+            pop rax
+      Mov ebx, dword [rbp]
       Add ecx,ebx
       ;pointer_calc
-            mov r8, rdx
-            mov r9, rax
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc
-      Mov [r8],ecx
+      Mov [rbp],ecx
       call FLAGS 
 inc_ip_add: 
       Add RSI,2
@@ -167,63 +172,63 @@ subx:
 exec_sub_8:
       Mov rdx,Reg
       ;pointer_calc
-            mov r8, rdx
-            mov r9, rax
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc
-      Mov cl, byte [r8]
+      Mov cl, byte [rbp]
       ;pointer_calc
-            mov r8, rdx
-            mov r9, rbx
+            push rax
+            mov rax, rbx
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc
-      ;Mov ch, byte [r8]   ================ ERRO
+            pop rax
+      ;Mov ch, byte [rbp]   ================ ERRO
       sub cl,ch
       ;pointer_calc
-            mov r8, rdx
-            mov r9, rax
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc
-      Mov byte [r8],cl
+      Mov byte [rbp],cl
       call FLAGS
       jmp inc_ip_sub
 ;-----
 exec_sub_16:
       Mov rdx,Reg
       ;pointer_calc
-            mov r8, rdx
-            mov r9, rax
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc
-      Mov cx, word [r8]
+      Mov cx, word [rbp]
       ;pointer_calc
-            mov r8, rdx
-            mov r9, rbx
+            push rax
+            mov rax, rbx
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc
-      Mov bx, word  [r8]
+            pop rax
+      Mov bx, word[rbp]
       sub cx,bx
       ;pointer_calc
-            mov r8, rdx
-            mov r9, rax
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc
-      ;Mov [r8b], cx   ================= procurar saber o que significa
+      Mov [rbp], cx
       call FLAGS
       jmp inc_ip_sub
 exec_sub_32:
       Mov rdx,Reg
       ;pointer_calc
-            mov r8, rdx
-            mov r9, rax
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc
-      Mov ecx, dword [r8]
+      Mov ecx, dword [rbp]
       ;pointer_calc
-            mov r8, rdx
-            xor r9, r9
-            mov r9w, bx
+            push rax
+            xor rax, rax
+            mov ax, bx
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc
-      Mov ebx, dword [r8]
+            pop rax
+      Mov ebx, dword [rbp]
       sub ecx,ebx
       ;pointer_calc
-            mov r8, rdx
-            mov r9, rax
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc
-      Mov [r8d],ecx
+      Mov [rbp],ecx
       call FLAGS 
 inc_ip_sub: 
       Add RSI,2

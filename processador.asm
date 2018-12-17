@@ -377,7 +377,43 @@ andx:
             jmp inc_ip_add
             
       andx16:
+            mov rdx, Reg
+           
+            push rax
+            mov rax, rbx
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc
+            mov cx, byte [rbp]
+            pop rax
+
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc
+            mov bx, byte [rbp]
+            ;OR OPERATION
+            or bx, cx
+            ;MOVING OPERATION RESULT FOR THE FIRST REGISTER
+            mov [rbp], bx
+            ;THIS OPERATION DOES NOT SET FLAGS
+            jmp inc_ip_add
       andx32:
+            mov rdx, Reg
+           
+            push rax
+            mov rax, rbx
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc
+            mov ch, byte [rbp]
+            pop rax
+
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc
+            mov cl, byte [rbp]
+            ;OR OPERATION
+            or cl, ch
+            ;MOVING OPERATION RESULT FOR THE FIRST REGISTER
+            mov [rbp], cl
+            ;THIS OPERATION DOES NOT SET FLAGS
+            jmp inc_ip_add
 
 orx:
 

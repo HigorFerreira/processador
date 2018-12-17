@@ -38,6 +38,8 @@ infinito:
      je cmpx
      cmp al, 7
      je cmpx
+     cmp al, 8
+     je jcx
      ;.....
      Cmp AL,18 
      JE haltx 
@@ -547,6 +549,20 @@ notx:
 
 cmpx:
       jmp subx
+
+jcx:
+      xor rax, rax
+      mov eax, dword [RDI+RSI+1] ;Obtendo o endereço de desvio
+
+      xor rbx, rbx
+      mov bl, byte [CARRY]            ;Obtendo a condição de carry
+
+      cmp bl, 1                       ;Testando se o carry está setado
+      je eax                          ;Indo para o endereço de desvio se carry = 1
+      jmp inc_jc_ip                   ;Indo para a próxima instrução se carry = 0
+
+
+
 
 haltx:
 

@@ -369,8 +369,8 @@ andx:
             ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc
             mov cl, byte [rbp]
-            ;OR OPERATION
-            or cl, ch
+            ;AND OPERATION
+            and cl, ch
             ;MOVING OPERATION RESULT FOR THE FIRST REGISTER
             mov [rbp], cl
             ;THIS OPERATION DOES NOT SET FLAGS
@@ -389,13 +389,84 @@ andx:
             ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc
             mov bx, byte [rbp]
+            ;AND OPERATION
+            and bx, cx
+            ;MOVING OPERATION RESULT FOR THE FIRST REGISTER
+            mov [rbp], bx
+            ;THIS OPERATION DOES NOT SET FLAGS
+            jmp inc_ip_add
+      andx32:
+            mov rdx, Reg
+           
+            push rax
+            mov rax, rbx
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc
+            mov ecx, byte [rbp]
+            pop rax
+
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc
+            mov ebx, byte [rbp]
+            ;AND OPERATION
+            and ebx, ecx
+            ;MOVING OPERATION RESULT FOR THE FIRST REGISTER
+            mov [rbp], ebx
+            ;THIS OPERATION DOES NOT SET FLAGS
+            jmp inc_ip_add
+
+orx:
+      xor rax, rax
+      mov al, byte[rsi + rdi + 1]
+      call decode_2r
+      cmp cl, 1b
+      je orx8
+      cmp cl, 10b
+      je orx16
+      cmp cl, 11b
+      je orx32
+      ;Erro de registrador inválido
+      jmp trata_reg_invalido
+      orx8:
+            mov rdx, Reg
+           
+            push rax
+            mov rax, rbx
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc
+            mov ch, byte [rbp]
+            pop rax
+
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc
+            mov cl, byte [rbp]
+            ;OR OPERATION
+            or cl, ch
+            ;MOVING OPERATION RESULT FOR THE FIRST REGISTER
+            mov [rbp], cl
+            ;THIS OPERATION DOES NOT SET FLAGS
+            jmp inc_ip_add
+            
+      orx16:
+            mov rdx, Reg
+           
+            push rax
+            mov rax, rbx
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc
+            mov cx, byte [rbp]
+            pop rax
+
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc
+            mov bx, byte [rbp]
             ;OR OPERATION
             or bx, cx
             ;MOVING OPERATION RESULT FOR THE FIRST REGISTER
             mov [rbp], bx
             ;THIS OPERATION DOES NOT SET FLAGS
             jmp inc_ip_add
-      andx32:
+      orx32:
             mov rdx, Reg
            
             push rax
@@ -414,8 +485,6 @@ andx:
             mov [rbp], ebx
             ;THIS OPERATION DOES NOT SET FLAGS
             jmp inc_ip_add
-
-orx:
 
 haltx:
 

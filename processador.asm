@@ -32,6 +32,8 @@ infinito:
      je andx
      cmp al, 4
      je orx
+     cmp al, 5
+     je notx
      ;.....
      Cmp AL,18 
      JE haltx 
@@ -349,9 +351,7 @@ inc_jc_ip:
       Mov [IP], dword RSI
       Jmp infinito
 
-;.....	
-
-;THERE ARE ERRORS starting in line 391
+;.....
 
 andx:
       xor rax, rax
@@ -493,6 +493,52 @@ orx:
             ;MOVING OPERATION RESULT FOR THE FIRST REGISTER
             mov [rbp], ebx
             ;THIS OPERATION DOES NOT SET FLAGS
+            jmp inc_ip_add
+
+notx:
+      xor rax,rax                   ;Zerando o registrador
+      mov al, byte [RDI+RSI+1]      ;Obtendo os parâmetros da instrução
+
+      ;O parâmetro deve ser zero nos primeiros 4 bits
+      ;E nos 4 restantes deve conter o registrador
+
+      mov bl, 0xf                   ;Máscara para testar se os 4 bits mais baixos são 0
+      and bl, al
+      cmp bl, 0                     ;Testando se os 4 bits mais baixos são 0
+      jne trata_inst_invalida_sai
+
+      shr al, 4         ;Obtendo o código do registrador
+
+      cmp al, 6
+      jl notx_exec16
+
+      ;O registrador é de 8 bits
+      mov rdx, [Reg]
+      call pointer_calc  ;Cálculo da localização do dado do registrador na memória
+      mov bl, byte [rbp]
+      not bl
+      mov [rbp], bl
+      jmp notx_fim
+
+      notx_exec16:
+            cmp al, 2
+            jl notx_exec32
+
+            mov rdx, [Reg]
+            call pointer_calc
+            mov bx, word[rbp]
+            not bx
+            mov [rbp], bx
+            jmp notx_fim
+      
+      notx_exec32:
+            mov rdx, [Reg]
+            call pointer_calc
+            mov ebx, dword[rbp]
+            not ebx
+            mov [rbp], ebx
+
+      notx_fim:
             jmp inc_ip_add
 
 haltx:

@@ -45,19 +45,19 @@ infinito:
       ;This helper makes an operation of the type X+Y*4 
       ;X has to be seted in rax
       ;Y has to be seted in rdx
-      ;The result is returned in rcx
-      ;Prototype: rcx <- (rax*4 + rdx) !alter rcx
+      ;The result is returned in rbp
+      ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
 pointer_calc:
       push rax  ;Salvando o valor de rax que será modificado pela multiplicação
 
-      mov rcx, 4   ;Colocando no rcx o valor a ser multiplicado
-      mul cl       ;Comando de multiplicação rax*4 = Y*4
+      mov rbp, 4   ;Colocando no rbp o valor a ser multiplicado
+      mul bpl      ;Comando de multiplicação rax*4 = Y*4
                    ;Neste ponto o rax é 4 vezes o valor original
       
       push rdx     ;Salvando o valor de rdx que será modificado pela adição
 
       add rdx, rax ;Somando o ponteiro, rdx = rax*4  + rdx
-      mov rcx, rdx ;Salvando o resultado que deverá ser retornado em rcx
+      mov rbp, rdx ;Salvando o resultado que deverá ser retornado em rbp
       
       pop rdx     ;Recuperando o valor original de rdx
       pop rax     ;Recuperando o valor original de rax

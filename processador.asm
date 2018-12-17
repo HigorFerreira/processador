@@ -34,6 +34,10 @@ infinito:
      je orx
      cmp al, 5
      je notx
+     cmp al, 6
+     je cmpx
+     cmp al, 7
+     je cmpx
      ;.....
      Cmp AL,18 
      JE haltx 
@@ -540,6 +544,9 @@ notx:
 
       notx_fim:
             jmp inc_ip_add
+
+cmpx:
+      jmp subx
 
 haltx:
 

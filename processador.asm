@@ -357,22 +357,22 @@ andx:
       ;Erro de registrador inválido
       jmp trata_reg_invalido
       andx8:
-            mov rcx, Reg
+            mov rdx, Reg
            
-            ;r8 <- (r8 + r9*4) !alter r15, r8
-            mov r8, rcx
-            mov r9, rbx
+            push rax
+            mov rax, rbx
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc
-            mov ch, byte [r8]
-             ;r8 <- (r8 + r9*4) !alter r15, r8
-            mov r8, rcx
-            mov r9, rax
+            mov ch, byte [rbp]
+            pop rax
+
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc
-            mov cl, byte [r8] ;Error, betwen registers?
+            mov cl, byte [rbp]
             ;OR OPERATION
             or cl, ch
             ;MOVING OPERATION RESULT FOR THE FIRST REGISTER
-            mov [r8], cl
+            mov [rbp], cl
             ;THIS OPERATION DOES NOT SET FLAGS
             jmp inc_ip_add
             

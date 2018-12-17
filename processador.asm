@@ -349,6 +349,8 @@ inc_jc_ip:
 
 ;.....	
 
+;THERE ARE ERRORS starting in line 391
+
 andx:
       xor rax, rax
       mov al, byte[rsi + rdi + 1]

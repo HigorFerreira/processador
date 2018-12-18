@@ -54,6 +54,8 @@ infinito:
      je jgex
      cmp al, 0xf
      je jmpx
+     cmp al, 0x10
+     je mov_rc
      ;.....
      Cmp AL,18 
      JE haltx 
@@ -653,6 +655,80 @@ jmpx:
       mov eax, dword [RDI+RSI+1]
       
       jmp eax
+
+decode_1r:
+      shr al, 4
+
+      cmp al, 6
+      jl 1r_16
+      cmp al, 9
+      jg erro_reg_sai
+      mov rcx, 1
+
+      ret         ;Retorno da instrução
+
+      1r_16:
+      cmp al, 2
+      jl 1r_32
+      mov rcx, 2
+
+      ret
+
+      1r_32:
+      cmp al, 0
+      jl erro_reg_sai
+      mov rcx, 3
+
+      ret
+
+mov_rc:
+      xor rax, rax
+      mov al, byte [RDI+RSI+1]     ;Capturando o id do registrador
+      
+      call decode_1r
+
+      cmp rcx, 1        ;Comparando se o registrador é de 8bits
+      je mov_rc8
+      cmp rcx, 2        ;Comparando se o registrador é de 16bits
+      je mov_rc16
+      cmp rcx, 3        ;Comparando se o registrador é de 32bits
+      je mov_rc32
+
+      mov_rc8:
+            mov rdx, Reg             ;Capturando o endereço dos registradores
+
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc       ;Calculado o valor da mémória com o registrador
+
+            mov [rbp], byte [RDI+RSI+2]
+
+            add rsi, 3
+            mov [IP], dword RSI
+            jmp infinito
+
+      mov_rc16:
+            mov rdx, Reg             ;Capturando o endereço dos registradores
+
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc       ;Calculado o valor da mémória com o registrador
+
+            mov [rbp], word [RDI+RSI+2]
+
+            add rsi, 4
+            mov [IP], dword RSI
+            jmp infinito
+
+      mov_rc32:
+            mov rdx, Reg             ;Capturando o endereço dos registradores
+
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc       ;Calculado o valor da mémória com o registrador
+
+            mov [rbp], dword [RDI+RSI+2]
+
+            add rsi, 6
+            mov [IP], dword RSI
+            jmp infinito
 
 
 

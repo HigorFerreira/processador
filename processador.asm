@@ -648,6 +648,12 @@ jgex:
       je eax
       jmp inc_jc_ip
 
+jmpx:
+      xor rax, rax
+      mov eax, dword [RDI+RSI+1]
+      
+      jmp eax
+
 
 
 haltx:

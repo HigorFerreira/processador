@@ -48,6 +48,10 @@ infinito:
      je jlx
      cmp al, 0xc
      je jgx
+     cmp al, 0xd
+     je jlex
+     cmp al, 0xe
+     je jgex
      ;.....
      Cmp AL,18 
      JE haltx 
@@ -612,6 +616,20 @@ jgx:
       cmp bl, 0                       ;Testando se o neg está setado
       je eax                          ;Indo para o endereço de desvio se neg = 1
       jmp inc_jc_ip                   ;Se não, o ciclo vai para a próxima instrução da máquina
+
+jlex:
+      xor rax, rax
+      mov eax, dword [RDI+RSI+1] ;Obtendo o endereço de desvio
+
+      xor rbx, rbx
+      mov bl, byte [NEG]              ;Obtendo a condição de carry
+      xor rcx, rcx
+      mov cl, byte [ZERO]
+      and bl, cl
+
+      cmp bl, 1                       
+      je eax                          
+      jmp inc_jc_ip                   
 
 
 

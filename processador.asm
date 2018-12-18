@@ -52,6 +52,8 @@ infinito:
      je jlex
      cmp al, 0xe
      je jgex
+     cmp al, 0xf
+     je jmpx
      ;.....
      Cmp AL,18 
      JE haltx 
@@ -627,9 +629,24 @@ jlex:
       mov cl, byte [ZERO]
       and bl, cl
 
-      cmp bl, 1                       
-      je eax                          
-      jmp inc_jc_ip                   
+      cmp bl, 1
+      je eax
+      jmp inc_jc_ip
+
+jgex:
+      xor rax, rax
+      mov eax, dword [RDI+RSI+1] ;Obtendo o endereço de desvio
+
+      xor rbx, rbx
+      mov bl, byte [NEG]
+      xor rcx, rcx
+      mov cl, byte [ZERO]
+      not cl
+      and bl, cl
+
+      cmp bl, 1
+      je eax
+      jmp inc_jc_ip
 
 
 

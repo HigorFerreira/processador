@@ -602,6 +602,16 @@ jlx:
       je eax                          ;Indo para o endereço de desvio se neg = 1
       jmp inc_jc_ip                   ;Se não, o ciclo vai para a próxima instrução da máquina
 
+jgx:
+      xor rax, rax
+      mov eax, dword [RDI+RSI+1] ;Obtendo o endereço de desvio
+
+      xor rbx, rbx
+      mov bl, byte [NEG]              ;Obtendo a condição de carry
+
+      cmp bl, 0                       ;Testando se o neg está setado
+      je eax                          ;Indo para o endereço de desvio se neg = 1
+      jmp inc_jc_ip                   ;Se não, o ciclo vai para a próxima instrução da máquina
 
 
 

@@ -700,7 +700,9 @@ mov_rc:
             ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc       ;Calculado o valor da mémória com o registrador
 
-            mov [rbp], byte [RDI+RSI+2]
+            xor rbx, rbx
+            mov bl, byte [RDI+RSI+2]      ;Capturando a constante
+            mov byte[rbp], bl             ;Salvando no registrador
 
             add rsi, 3
             mov [IP], dword RSI
@@ -712,7 +714,9 @@ mov_rc:
             ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc       ;Calculado o valor da mémória com o registrador
 
-            mov [rbp], word [RDI+RSI+2]
+            xor rbx, rbx
+            mov bx, word [RDI+RSI+2]      ;Capturando a constante
+            mov word[rbp], bx             ;Salvando no registrador
 
             add rsi, 4
             mov [IP], dword RSI
@@ -724,7 +728,9 @@ mov_rc:
             ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc       ;Calculado o valor da mémória com o registrador
 
-            mov [rbp], dword [RDI+RSI+2]
+            xor rbx, rbx
+            mov ebx, dword [RDI+RSI+2]      ;Capturando a constante
+            mov dword[rbp], ebx             ;Salvando no registrador
 
             add rsi, 6
             mov [IP], dword RSI

@@ -56,6 +56,8 @@ infinito:
      je jmpx
      cmp al, 0x10
      je mov_rc
+     cmp al, 0x11
+     je mov_rr
      ;.....
      Cmp AL,18 
      JE haltx 
@@ -735,6 +737,22 @@ mov_rc:
             add rsi, 6
             mov [IP], dword RSI
             jmp infinito
+
+mov_rr:
+      mov rax, rax
+      mov al, byte[rsi+rdi+1]   ;Capturando o código dos registradores
+
+      call decode_2r            ;Decodificando os registradores
+
+      ;Testando os tamanhos dos registradores
+      cmp rcx, 1
+      je mov_rr8
+      cmp rcx, 2
+      je mov_rr16
+      cmp rcx, 3
+      je mov_rr32
+
+      jmp erro
 
 
 

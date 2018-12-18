@@ -705,7 +705,7 @@ mov_rc:
       je mov_rc32
 
       mov_rc8:
-            mov rdx, Reg             ;Capturando o endereço dos registradores
+            mov rdx, [Reg]            ;Capturando o endereço dos registradores
 
             ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc       ;Calculado o valor da mémória com o registrador
@@ -719,7 +719,7 @@ mov_rc:
             jmp infinito
 
       mov_rc16:
-            mov rdx, Reg             ;Capturando o endereço dos registradores
+            mov rdx, [Reg]            ;Capturando o endereço dos registradores
 
             ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc       ;Calculado o valor da mémória com o registrador
@@ -733,7 +733,7 @@ mov_rc:
             jmp infinito
 
       mov_rc32:
-            mov rdx, Reg             ;Capturando o endereço dos registradores
+            mov rdx, [Reg]             ;Capturando o endereço dos registradores
 
             ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
             call pointer_calc       ;Calculado o valor da mémória com o registrador
@@ -747,20 +747,64 @@ mov_rc:
             jmp infinito
 
 mov_rr:
-      mov rax, rax
+      xor rax, rax
       mov al, byte[rsi+rdi+1]   ;Capturando o código dos registradores
 
       call decode_2r            ;Decodificando os registradores
 
       ;Testando os tamanhos dos registradores
       cmp rcx, 1
-      ;je mov_rr8
+      je mov_rr8
       cmp rcx, 2
-      ;je mov_rr16
+      je mov_rr16
       cmp rcx, 3
-      ;je mov_rr32
+      je mov_rr32
 
-      ;jmp erro
+      mov_rr8:
+            mov rdx, [Reg]
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc
+            push rbp                ;Endereço do primeiro registrador
+            mov rax, rbx            ;Parametrizando para calcular o ponteiro, o índice do primeiro registrador será perdido
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc
+            mov r8b, byte[rbp]      ;Capturando o valor do segundo registrador
+            pop rbp                 ;Recuperando o endereço do primeiro registrador
+
+            mov byte[rbp], r8b      ;MMovendo o valor do segundo registrador para o primeiro
+
+            jmp inc_ip_add          ;Incrementando com o tamanho da instrução para executar a próxima
+      mov_rr16:
+            mov rdx, [Reg]
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc
+            push rbp                ;Endereço do primeiro registrador
+            mov rax, rbx            ;Parametrizando para calcular o ponteiro, o índice do primeiro registrador será perdido
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc
+            mov r8w, word[rbp]      ;Capturando o valor do segundo registrador
+            pop rbp                 ;Recuperando o endereço do primeiro registrador
+
+            mov word[rbp], r8w      ;MMovendo o valor do segundo registrador para o primeiro
+
+            jmp inc_ip_add          ;Incrementando com o tamanho da instrução para executar a próxima
+      mov_rr32:
+            mov rdx, [Reg]
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc
+            push rbp                ;Endereço do primeiro registrador
+            mov rax, rbx            ;Parametrizando para calcular o ponteiro, o índice do primeiro registrador será perdido
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc
+            mov r8d, dword[rbp]     ;Capturando o valor do segundo registrador
+            pop rbp                 ;Recuperando o endereço do primeiro registrador
+
+            mov dword[rbp], r8d     ;MMovendo o valor do segundo registrador para o primeiro
+
+            jmp inc_ip_add          ;Incrementando com o tamanho da instrução para executar a próxima
+
+
+      jmp erro
 
 
 
@@ -769,4 +813,4 @@ haltx:
 trata_inst_invalida_sai:
 trata_reg_invalido:
 zero:
-
+erro:

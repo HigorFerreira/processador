@@ -670,21 +670,21 @@ decode_1r:
       shr al, 4
 
       cmp al, 6
-      jl 1r_16
+      jl r_16
       cmp al, 9
       jg erro_reg_sai
       mov rcx, 1
 
       ret         ;Retorno da instrução
 
-      1r_16:
+      r_16:
       cmp al, 2
-      jl 1r_32
+      jl r_32
       mov rcx, 2
 
       ret
 
-      1r_32:
+      r_32:
       cmp al, 0
       jl erro_reg_sai
       mov rcx, 3
@@ -754,13 +754,13 @@ mov_rr:
 
       ;Testando os tamanhos dos registradores
       cmp rcx, 1
-      je mov_rr8
+      ;je mov_rr8
       cmp rcx, 2
-      je mov_rr16
+      ;je mov_rr16
       cmp rcx, 3
-      je mov_rr32
+      ;je mov_rr32
 
-      jmp erro
+      ;jmp erro
 
 
 

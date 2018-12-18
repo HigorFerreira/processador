@@ -58,6 +58,8 @@ infinito:
      je mov_rc
      cmp al, 0x11
      je mov_rr
+     cmp al, 0x12
+     je mov_er
      ;.....
      Cmp AL,18 
      JE haltx 
@@ -742,9 +744,7 @@ mov_rc:
             mov ebx, dword [RDI+RSI+2]      ;Capturando a constante
             mov dword[rbp], ebx             ;Salvando no registrador
 
-            add rsi, 6
-            mov [IP], dword RSI
-            jmp infinito
+            jmp inc_6bytes
 
 mov_rr:
       xor rax, rax
@@ -802,11 +802,59 @@ mov_rr:
             mov dword[rbp], r8d     ;MMovendo o valor do segundo registrador para o primeiro
 
             jmp inc_ip_add          ;Incrementando com o tamanho da instrução para executar a próxima
-
-
+      
       jmp erro
 
+mov_er:
+      mov rdx, [Reg]            ;Endereço dos registradores
+      mov r8, [M]               ;Endereço da memória
 
+      xor rax, rax
+      xor rbx, rbx
+      mov ebx, dword[rsi+rdi+1] ;Capturando o endereço da memória
+      mov al, byte[rsi+rdi+4]   ;Endereço do código do registrador
+
+      call decode_1r            ;Decodificando o registrador
+
+      cmp rcx, 1
+      je mov_er8
+      cmp rcx, 2
+      je mov_er16
+      cmp rcx, 3
+      je mov_er32
+      
+      jmp erro
+
+      mov_er8:
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc
+            xor rax, rax
+            mov al, byte[rbp]
+            mov [r8d+ebx], al
+
+            jmp inc_6bytes                     
+      mov_er16:
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc
+            xor rax, rax
+            mov ax, word[rbp]
+            mov [r8d+ebx], ax
+
+            jmp inc_6bytes  
+      mov_er32:
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc
+            xor rax, rax
+            mov eax, dword[rbp]
+            mov [r8d+ebx], eax
+
+            jmp inc_6bytes  
+
+
+inc_6bytes:
+      add rsi, 6
+      mov [IP], dword RSI
+      jmp infinito   
 
 haltx:
 

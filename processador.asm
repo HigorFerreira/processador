@@ -60,6 +60,8 @@ infinito:
      je mov_rr
      cmp al, 0x12
      je mov_er
+     cmp al, 0x13
+     je mov_r1r
      ;.....
      Cmp AL,18 
      JE haltx 
@@ -848,13 +850,86 @@ mov_er:
             mov eax, dword[rbp]
             mov [r8d+ebx], eax
 
-            jmp inc_6bytes  
+            jmp inc_6bytes
+
+mov_r1r:
+      ;Formato da instrução
+      ;XX XX XX
+      ;Primeiro byte: Identificador da instrução
+      ;Segundo  byte: Registrador de 32 bits
+      ;Terceiro byte: Registrador de 8 | 16 | 32 bits
+      xor rbx, rbx
+      mov bl, byte[rsi+rdi+1]    ;Capturando o primeiro registrador, que deve ser de 32 bits
+
+      cmp bl, 1
+      jl trata_inst_invalida_sai
+      cmp bl, 2
+      jg trata_inst_invalida_sai
+
+      mov al, byte[rsi+rdi+2];Capturando a parte da instrução que contém o registrador a ser movido
+      shl al, 4
+      call decode_1r
+      
+      cmp rcx, 1
+      je mov_r1r8
+      cmp rcx, 2
+      je mov_r1r16
+      cmp rcx, 3
+      je mov_r1r32
+
+      jmp erro
+
+      mov_r1r8:
+            mov rdx, [Reg]
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc
+            mov r8b, byte[rbp]   ;Capturando o valor do registrador 2
+
+            mov al, bl
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc  ;Ponteiro para o registrador de 32bits
+
+            mov byte[rbp], r8b     ;Movendo para o registrador de 32 o valor do registrador de 8
+
+            jmp inc_3bytes
+      mov_r1r16:
+            mov rdx, [Reg]
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc
+            mov r8w, word[rbp]   ;Capturando o valor do registrador 2
+
+            mov al, bl
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc  ;Ponteiro para o registrador de 32bits
+
+            mov word[rbp], r8w     ;Movendo para o registrador de 32 o valor do registrador de 16
+
+            jmp inc_3bytes
+      mov_r1r32:
+            mov rdx, [Reg]
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc
+            mov r8d, dword[rbp]   ;Capturando o valor do registrador 2
+
+            mov al, bl
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc  ;Ponteiro para o registrador de 32bits
+
+            mov dword[rbp], r8d     ;Movendo para o registrador de 32 o valor do registrador de 8
+
+            jmp inc_3bytes
+
 
 
 inc_6bytes:
       add rsi, 6
       mov [IP], dword RSI
-      jmp infinito   
+      jmp infinito 
+
+inc_3bytes:
+      add rsi, 3
+      mov [IP], dword RSI
+      jmp infinito    
 
 haltx:
 

@@ -572,7 +572,8 @@ jcx:
       mov bl, byte [CARRY]            ;Obtendo a condição de carry
 
       cmp bl, 1                       ;Testando se o carry está setado
-      je eax                          ;Indo para o endereço de desvio se carry = 1
+      push rax
+      ret
       jmp inc_jc_ip                   ;Se não, o ciclo vai para a próxima instrução da máquina
 
 jex:
@@ -583,7 +584,8 @@ jex:
       mov bl, byte [ZERO]             ;Obtendo a condição de carry
 
       cmp bl, 1                       ;Testando se o zero está setado
-      je eax                          ;Indo para o endereço de desvio se zero = 1
+      push rax                          
+      ret                             ;Indo para o endereço de desvio se zero = 1
       jmp inc_jc_ip                   ;Se não, o ciclo vai para a próxima instrução da máquina
 
 jnzx:
@@ -594,7 +596,8 @@ jnzx:
       mov bl, byte [ZERO]             ;Obtendo a condição de carry
 
       cmp bl, 0                       ;Testando se o zero está setado
-      je eax                          ;Indo para o endereço de desvio se zero = 1
+      push rax                          
+      ret                             ;Indo para o endereço de desvio se zero = 1
       jmp inc_jc_ip                   ;Se não, o ciclo vai para a próxima instrução da máquina
 
 jlx:
@@ -605,7 +608,8 @@ jlx:
       mov bl, byte [NEG]              ;Obtendo a condição de carry
 
       cmp bl, 1                       ;Testando se o neg está setado
-      je eax                          ;Indo para o endereço de desvio se neg = 1
+      push rax                          
+      ret                             ;Indo para o endereço de desvio se neg = 1
       jmp inc_jc_ip                   ;Se não, o ciclo vai para a próxima instrução da máquina
 
 jgx:
@@ -616,7 +620,8 @@ jgx:
       mov bl, byte [NEG]              ;Obtendo a condição de carry
 
       cmp bl, 0                       ;Testando se o neg está setado
-      je eax                          ;Indo para o endereço de desvio se neg = 1
+      push rax                          
+      ret                             ;Indo para o endereço de desvio se neg = 1
       jmp inc_jc_ip                   ;Se não, o ciclo vai para a próxima instrução da máquina
 
 jlex:
@@ -630,7 +635,8 @@ jlex:
       and bl, cl
 
       cmp bl, 1
-      je eax
+      push rax
+      ret
       jmp inc_jc_ip
 
 jgex:
@@ -645,14 +651,16 @@ jgex:
       and bl, cl
 
       cmp bl, 1
-      je eax
+      push rax
+      ret
       jmp inc_jc_ip
 
 jmpx:
       xor rax, rax
       mov eax, dword [RDI+RSI+1]
       
-      jmp eax
+      push rax
+      ret
 
 
 

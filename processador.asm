@@ -54,6 +54,10 @@ infinito:
      je jgex
      cmp al, 0xf
      je jmpx
+     cmp al, 0x10
+     je mov_rc
+     cmp al, 0x11
+     je mov_rr
      ;.....
      Cmp AL,18 
      JE haltx 
@@ -661,6 +665,102 @@ jmpx:
       
       push rax
       ret
+
+decode_1r:
+      shr al, 4
+
+      cmp al, 6
+      jl 1r_16
+      cmp al, 9
+      jg erro_reg_sai
+      mov rcx, 1
+
+      ret         ;Retorno da instrução
+
+      1r_16:
+      cmp al, 2
+      jl 1r_32
+      mov rcx, 2
+
+      ret
+
+      1r_32:
+      cmp al, 0
+      jl erro_reg_sai
+      mov rcx, 3
+
+      ret
+
+mov_rc:
+      xor rax, rax
+      mov al, byte [RDI+RSI+1]     ;Capturando o id do registrador
+      
+      call decode_1r
+
+      cmp rcx, 1        ;Comparando se o registrador é de 8bits
+      je mov_rc8
+      cmp rcx, 2        ;Comparando se o registrador é de 16bits
+      je mov_rc16
+      cmp rcx, 3        ;Comparando se o registrador é de 32bits
+      je mov_rc32
+
+      mov_rc8:
+            mov rdx, Reg             ;Capturando o endereço dos registradores
+
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc       ;Calculado o valor da mémória com o registrador
+
+            xor rbx, rbx
+            mov bl, byte [RDI+RSI+2]      ;Capturando a constante
+            mov byte[rbp], bl             ;Salvando no registrador
+
+            add rsi, 3
+            mov [IP], dword RSI
+            jmp infinito
+
+      mov_rc16:
+            mov rdx, Reg             ;Capturando o endereço dos registradores
+
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc       ;Calculado o valor da mémória com o registrador
+
+            xor rbx, rbx
+            mov bx, word [RDI+RSI+2]      ;Capturando a constante
+            mov word[rbp], bx             ;Salvando no registrador
+
+            add rsi, 4
+            mov [IP], dword RSI
+            jmp infinito
+
+      mov_rc32:
+            mov rdx, Reg             ;Capturando o endereço dos registradores
+
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc       ;Calculado o valor da mémória com o registrador
+
+            xor rbx, rbx
+            mov ebx, dword [RDI+RSI+2]      ;Capturando a constante
+            mov dword[rbp], ebx             ;Salvando no registrador
+
+            add rsi, 6
+            mov [IP], dword RSI
+            jmp infinito
+
+mov_rr:
+      mov rax, rax
+      mov al, byte[rsi+rdi+1]   ;Capturando o código dos registradores
+
+      call decode_2r            ;Decodificando os registradores
+
+      ;Testando os tamanhos dos registradores
+      cmp rcx, 1
+      je mov_rr8
+      cmp rcx, 2
+      je mov_rr16
+      cmp rcx, 3
+      je mov_rr32
+
+      jmp erro
 
 
 

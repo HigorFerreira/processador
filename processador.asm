@@ -15,8 +15,22 @@ global start
 
 start:
 
+;O registrador Base Pointer "BP" apontará para o fim da memória
+      mov rdx, [Reg]
+      mov rax, 0xa
+      ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+      call pointer_calc
+      mov rbx, [M+128000]
+      mov [rbp], rbx
+
+;O registrador Stack Pointer "SP" inicialmente apontará para o fim da memória
+      mov rax, 0xb
+      ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+      call pointer_calc
+      mov [rbp], rbx
+
 ; RSI atuará como IP  RDI Memoria
-      Mov  RDi, M
+     Mov  RDi, M
 infinito:
      Mov RSI,[IP]
      ; obtem instrução 
@@ -66,6 +80,10 @@ infinito:
      je mov_re
      cmp al, 0x15
      je mov_rr1
+     cmp al, 0x16
+     je pushx
+     cmp al, 0x17
+     je popx
      ;.....
      Cmp AL,18 
      JE haltx 
@@ -280,7 +298,7 @@ FLAGS:
 zero1:
       Mov al,1
 carry:
-      Mov [zero],al
+      Mov [ZERO],al
       Jc  carry1
       Mov al,0 
       Jmp negx
@@ -1057,6 +1075,156 @@ mov_rr1:
 
             jmp inc_ip_add
 
+pushx:
+      mov rdx, [Reg]
+
+      xor rax, rax
+      mov al, [rsi+rdi+1]
+      call decode_1r
+
+      ;Busca da posisão atual do SP
+      push rax
+      mov rax, 0xb
+      ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+	call pointer_calc
+      mov ebx, [rbp]    ;Valor atual do SP
+      sub ebx, 4        ;Alocando 4 bytes para armazenar na pilha
+      mov [rbp], ebx    ;Atualizando o ponteiro SP
+      pop rax
+      
+      cmp rcx, 1
+      je pushx8
+      cmp rcx, 2
+      je pushx16
+      cmp rcx, 3
+      je pushx32
+
+      jmp erro
+
+      pushx8:
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+	      call pointer_calc
+            mov r8b, byte[rbp]
+            mov [rbx], r8b
+
+            jmp inc_ip_add
+      pushx16:
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+	      call pointer_calc
+            mov r8w, word[rbp]
+            mov [rbx], r8w
+
+            jmp inc_ip_add
+      pushx32:
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+	      call pointer_calc
+            mov r8d, dword[rbp]
+            mov [rbx], r8d
+
+            jmp inc_ip_add
+popx:
+      mov rdx, [Reg]
+
+      xor rax, rax
+      mov al, [rsi+rdi+1]
+      call decode_1r
+
+      ;Capturando o valor de BP
+      push rax
+      xor rax, rax
+      mov rax, 0xa
+      ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+	call pointer_calc
+      mov ecx, dword[rbp]
+      pop rax
+
+      ;Busca da posisão atual do SP
+      push rax
+      mov rax, 0xb
+      ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+	call pointer_calc
+      ;Testando pilha vazia
+      cmp dword[rbp], ecx
+      je pilha_vazia
+
+      mov ebx, [rbp]    ;Valor atual do SP
+      pop rax
+
+      cmp rcx, 1
+      je popx_8
+      cmp rcx, 2
+      je popx_16
+      cmp rcx, 3
+      je popx_32
+
+      jmp erro
+
+      popx_8:
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+	      call pointer_calc ;rbp contém o endereço do registrador passado
+
+            mov [rbp], bl
+            mov r9d, ebx
+            add ebx, 4        ;Liberando 4 bytes da pilha
+            mov [r9d], ebx    ;Atualizando o ponteiro SP
+
+            jmp inc_ip_add
+      popx_16:
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+	      call pointer_calc ;rbp contém o endereço do registrador passado
+
+            mov [rbp], bx
+            mov r9d, ebx
+            add ebx, 4        ;Liberando 4 bytes da pilha
+            mov [r9d], ebx    ;Atualizando o ponteiro SP
+
+            jmp inc_ip_add
+      popx_32:
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+	      call pointer_calc ;rbp contém o endereço do registrador passado
+
+            mov [rbp], ebx
+            mov r9d, ebx
+            add ebx, 4        ;Liberando 4 bytes da pilha
+            mov [r9d], ebx    ;Atualizando o ponteiro SP
+
+            jmp inc_ip_add
+
+      pilha_vazia:
+            mov eax, 4
+            mov ebx, 1
+            db "A pilha esta vazia", 0xa
+            mov ecx, [0x00000ADF]
+            mov edx, 19
+            syscall
+haltx:
+      mov eax, 1
+      syscall
+
+trata_inst_invalida_sai:
+      mov eax, 4
+      mov ebx, 1
+      db "A instrucao e invalida", 0xa
+      mov ecx, [0x00000B14]
+      mov edx, 23
+      syscall
+
+trata_reg_invalido:
+      mov eax, 4
+      mov ebx, 1
+      db "Registradores invalidos", 0xa
+      mov ecx, [0x00000B43]
+      mov edx, 24
+      syscall
+erro:
+      mov eax, 4
+      mov ebx, 1
+      db "Erro desconhecido", 0xa
+      mov ecx, [0x00000B73]
+      mov edx, 18
+      syscall
+      
+
 inc_6bytes:
       add rsi, 6
       mov [IP], dword RSI
@@ -1065,11 +1233,4 @@ inc_6bytes:
 inc_3bytes:
       add rsi, 3
       mov [IP], dword RSI
-      jmp infinito    
-
-haltx:
-
-trata_inst_invalida_sai:
-trata_reg_invalido:
-zero:
-erro:
+      jmp infinito 

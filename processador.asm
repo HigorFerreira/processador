@@ -64,6 +64,8 @@ infinito:
      je mov_r1r
      cmp al, 0x14
      je mov_re
+     cmp al, 0x15
+     je mov_rr1
      ;.....
      Cmp AL,18 
      JE haltx 
@@ -974,6 +976,86 @@ mov_re:
             mov dword[ebx], r8d
 
             jmp inc_6bytes
+
+mov_rr1:
+      xor rax, rax
+      mov al, [rsi+rdi+1]
+
+      mov bl, 0xf    ;Tratando o segundo registrador do byte
+      and al, bl     ;Tratando o segundo registrador do byte
+      call decode_1r ;Tratando o segundo registrador do byte
+      mov bl, al     ;Tratando o segundo registrador do byte
+
+      ;O segundo registrador deve ser 0 | 1
+      cmp bl, 0
+      jl trata_inst_invalida_sai
+      cmp bl, 1
+      jg trata_inst_invalida_sai
+
+      xor rax, rax            ;Tratando o primeiro registrador do byte
+      mov al, [rsi+rdi+1]     ;Tratando o primeiro registrador do byte
+
+      call decode_1r          ;Tratando o primeiro registrador do byte
+
+      cmp rcx, 1
+      je mov_rr1_8
+      cmp rcx, 2
+      je mov_rr1_16
+      cmp rcx, 3
+      je mov_rr1_32
+
+      jmp erro
+
+      mov_rr1_8:
+            mov rdx, [Reg]          ;Endereço dos registradores
+
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc
+            mov r8, rbp             ;r8 contém o enredeço do primeiro registrador
+
+            mov rax, rbx
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc       ;rbp contém o endereço do segundo registrador
+
+            xor rax, rax
+            mov eax, dword[rbp]     ;Capturando o valor do segundo registrador
+            and rax, 0xf            ;Truncando dado
+            mov byte[r8], al        ;Movendo
+
+            jmp inc_ip_add
+      mov_rr1_16:
+            mov rdx, [Reg]          ;Endereço dos registradores
+
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc
+            mov r8, rbp             ;r8 contém o enredeço do primeiro registrador
+
+            mov rax, rbx
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc       ;rbp contém o endereço do segundo registrador
+
+            xor rax, rax
+            mov eax, dword[rbp]     ;Capturando o valor do segundo registrador
+            and rax, 0xff           ;Truncando dado
+            mov word[r8], ax        ;Movendo
+
+            jmp inc_ip_add
+      mov_rr1_32:
+            mov rdx, [Reg]          ;Endereço dos registradores
+
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc
+            mov r8, rbp             ;r8 contém o enredeço do primeiro registrador
+
+            mov rax, rbx
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc       ;rbp contém o endereço do segundo registrador
+
+            xor rax, rax
+            mov eax, dword[rbp]     ;Capturando o valor do segundo registrador
+            mov dword[r8], eax       ;Movendo
+
+            jmp inc_ip_add
 
 inc_6bytes:
       add rsi, 6

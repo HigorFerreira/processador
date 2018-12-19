@@ -62,6 +62,8 @@ infinito:
      je mov_er
      cmp al, 0x13
      je mov_r1r
+     cmp al, 0x14
+     je mov_re
      ;.....
      Cmp AL,18 
      JE haltx 
@@ -919,7 +921,59 @@ mov_r1r:
 
             jmp inc_3bytes
 
+mov_re:
+      xor rax, rax
+      mov al, byte[rsi+rdi+1]
 
+      call decode_1r
+      cmp rcx, 1
+      je mov_re8
+      cmp rcx, 2
+      je mov_re16
+      cmp rcx, 3
+      je mov_re32
+
+      jmp erro
+
+      mov_re8:
+            xor rbx, rbx
+
+            mov rdx, [Reg]                ;Localização dos registradores
+            mov ebx, dword[rsi+rdi+2]     ;Endereço para ser movido
+
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc
+
+            mov r8b, byte[rbp]
+            mov byte[ebx], r8b
+
+            jmp inc_6bytes
+      mov_re16:
+            xor rbx, rbx
+
+            mov rdx, [Reg]                ;Localização dos registradores
+            mov ebx, dword[rsi+rdi+2]     ;Endereço para ser movido
+
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc
+
+            mov r8w, word[rbp]
+            mov word[ebx], r8w
+
+            jmp inc_6bytes
+      mov_re32:
+            xor rbx, rbx
+
+            mov rdx, [Reg]                ;Localização dos registradores
+            mov ebx, dword[rsi+rdi+2]     ;Endereço para ser movido
+
+            ;Prototype: rbp <- (rax*4 + rdx) !alter rbp
+            call pointer_calc
+
+            mov r8d, dword[rbp]
+            mov dword[ebx], r8d
+
+            jmp inc_6bytes
 
 inc_6bytes:
       add rsi, 6

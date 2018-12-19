@@ -852,6 +852,7 @@ mov_er:
 
             jmp inc_6bytes
 
+;OCORREU UMA FALHA DE INTERPRETAÇÃO DA INSTRUÇÃO DEVIDO A UM ERRO DE DIGITAÇÃO DO PROFESSOR
 mov_r1r:
       ;Formato da instrução
       ;XX XX XX
